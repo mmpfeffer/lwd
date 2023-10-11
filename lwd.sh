@@ -1,10 +1,9 @@
-#!/bin/bash
 #Can't remember every place you need in the tree?
 #Have multiple LINUX sessions open at the same time?
 #Want to share your shortcuts with others to collaborate?
 
 #If you install these commands in your BASH startup on LINUX, it can help you navigate
-#the Fusion tree more easily as you work on integration tasks using multiple windows:
+#more easily as you work on integration tasks using multiple windows:
 
 # Command Summary
 # ---------------
@@ -221,7 +220,7 @@ llwd() {
 	fi
 	if [[ "$1" == "-u" ]]; then shift; fi
 	if [[ "$1" != "" ]]
-	then _longlist="yes"; # assumed witth username option.
+	then _longlist="yes"; # assumed with username option.
 	     eval _llwd_userdir=~$1
 	     if [[ "$_llwd_userdir" == "~$1" ]]
 	     then echo "User $1 not found."
@@ -231,10 +230,10 @@ llwd() {
 	fi
 	if [[ $_longlist == "yes" ]]
 	then if [[ -f $_llwd_userdir/.loc.$HOSTNAME ]]
-	     then grep '^function' $_llwd_userdir/.loc.$HOSTNAME | cut -b 10- | sed -e 's/\(^[^ ]\)* { cd \([^;]*\);.*/\1 -> \2/' -e 's/\(^[^ ]* \).*cd \$_lwd_home\/\([^;]*\)\;.*/\1->\2 (relative)/'
+	     then grep '^function' $_llwd_userdir/.loc.$HOSTNAME | cut -b 10- | sed -e 's/\(^[^ ]\)* { cd \([^;]*\);.*/\1 -> \2/' -e 's/\(^[^ ]* \).*cd \$_lwd_home\/\([^;]*\)\;.*/\1->\2 (relative)/' | sort
 	     fi
 	else 
-	     echo $_locs
+	     echo $_locs | tr ' ' '\n' | sort | tr '\n' ' '; echo
 	fi
 }
 
