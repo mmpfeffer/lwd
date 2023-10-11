@@ -22,7 +22,7 @@
 # shortcuts will be automatically updated in each session you open on LINUX.
 
 
-# Latest version available at ~mpfeffer/lwd/lwd.sh
+# Latest version available at github:mmpfeffer/lwd
 
 # By Moshe Pfeffer
 # Install as Bash Startup script.
