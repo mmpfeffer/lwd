@@ -91,10 +91,10 @@ lwd() {
 	_uwhere=""
 	if [[ "$1" == "-t" ]]
 	then _uwhere=$2
-	elif [[ -n "$2" ]]
+	elif [[ -n "$2" ]]; then
 	     _uwhere=$1
 	fi
-	if [[ -n "$_uwhere" ]]
+	if [[ -n "$_uwhere" ]]; then
 	     _where=$_uwhere # Initial assumption - use as is.
 	     if [[ "$1" =~ '^[^/].*' ]]
 	     then _reldir=yes
