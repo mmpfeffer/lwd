@@ -29,6 +29,33 @@
 
 # Shared directory shortcuts
 
+# Parse command-line arguments
+export _LWD_DISTINCT=
+_LWD_QUIT=false
+while getopts ":hd" opt; do
+  case ${opt} in
+    h )
+      # Display help message
+      echo "Usage: lwd.sh [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  -h          Show help"
+      echo "  -d          Enable distinct host mode"
+      _LWD_QUIT=true
+      ;;
+    d )
+      # Enable distinct host mode
+      export _LWD_DISTINCT=$_LWD_DISTINCT
+      ;;
+    \? )
+      # Invalid option
+      echo "LWD Error: Invalid option -$OPTARG" 1>&2
+      _LWD_QUIT=true
+      ;;
+  esac
+done
+
+if ! $_LWD_QUIT; then
 uwd() {
 	if [[ "$1" == "-help" ]]
 	then echo "Usage: uwd [[-u] <username>]"
@@ -50,8 +77,8 @@ uwd() {
 	else _uwd_userdir=~
 	     _lwd_user=""
 	fi
-	if [[ -f $_uwd_userdir/.loc.$HOSTNAME ]]
-	then . $_uwd_userdir/.loc.$HOSTNAME
+	if [[ -f $_uwd_userdir/.loc$_LWD_DISTINCT ]]
+	then . $_uwd_userdir/.loc$_LWD_DISTINCT
 	fi
 }
 
@@ -132,10 +159,10 @@ lwd() {
 	then if [[ -n "$_lwd_home" && ! -d $_lwd_home/$_where ]]
 	     then echo Warning: \'$_uwhere\' not found in $_lwd_home.
 	     fi
-	     echo "function $1 { if [[ -n "\$_lwd_home" ]]; then cd \$_lwd_home/$_where; else echo No shortcut home set. Use \'swd\'.; fi; }" >>$_lwd_userdir/.loc.$HOSTNAME;
-	else echo "function $1 { cd $_where; }" >>$_lwd_userdir/.loc.$HOSTNAME;
+	     echo "function $1 { if [[ -n "\$_lwd_home" ]]; then cd \$_lwd_home/$_where; else echo No shortcut home set. Use \'swd\'.; fi; }" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
+	else echo "function $1 { cd $_where; }" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
 	fi
-	echo _locs=\"$1 \$_locs\" >>$_lwd_userdir/.loc.$HOSTNAME;
+	echo _locs=\"$1 \$_locs\" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
 	uwd $_lwd_user
 }
 
@@ -181,19 +208,19 @@ rwd() {
 	     then echo -n "Remove all $_rwd_user working directory aliases (y/n)? "
 	          read _ans
 	          case "$_ans" in 
-	     	     y|Y) rm -f $_rwd_userdir/.loc.$HOSTNAME ;;
+	     	     y|Y) rm -f $_rwd_userdir/.loc$_LWD_DISTINCT ;;
 		     *) ;;
 	          esac
-	     else rm -f $_rwd_userdir/.loc.$HOSTNAME
+	     else rm -f $_rwd_userdir/.loc$_LWD_DISTINCT
 	     fi
 	else 
-	     if [[ -w $_rwd_userdir/.loc.$HOSTNAME ]]
-	     then if [[ ! -w $_rwd_userdir/.loc.$HOSTNAME ]]
-	          then echo "No write permission on $_rwd_userdir/.loc.$HOSTNAME"
+	     if [[ -w $_rwd_userdir/.loc$_LWD_DISTINCT ]]
+	     then if [[ ! -w $_rwd_userdir/.loc$_LWD_DISTINCT ]]
+	          then echo "No write permission on $_rwd_userdir/.loc$_LWD_DISTINCT"
 	               return 1
  	          fi
 	          for _alias in $*
-	          do ed -s $_rwd_userdir/.loc.$HOSTNAME 2>/dev/null <<END
+	          do ed -s $_rwd_userdir/.loc$_LWD_DISTINCT 2>/dev/null <<END
 /^function $_alias/,/^function $_alias/+1d
 w
 q
@@ -229,8 +256,8 @@ llwd() {
 	else eval _llwd_userdir=~$_lwd_user
 	fi
 	if [[ $_longlist == "yes" ]]
-	then if [[ -f $_llwd_userdir/.loc.$HOSTNAME ]]
-	     then grep '^function' $_llwd_userdir/.loc.$HOSTNAME | cut -b 10- | sed -e 's/\(^[^ ]\)* { cd \([^;]*\);.*/\1 -> \2/' -e 's/\(^[^ ]* \).*cd \$_lwd_home\/\([^;]*\)\;.*/\1->\2 (relative)/' | sort
+	then if [[ -f $_llwd_userdir/.loc$_LWD_DISTINCT ]]
+	     then grep '^function' $_llwd_userdir/.loc$_LWD_DISTINCT | cut -b 10- | sed -e 's/\(^[^ ]\)* { cd \([^;]*\);.*/\1 -> \2/' -e 's/\(^[^ ]* \).*cd \$_lwd_home\/\([^;]*\)\;.*/\1->\2 (relative)/' | sort
 	     fi
 	else 
 	     echo $_locs | tr ' ' '\n' | sort | tr '\n' ' '; echo
@@ -315,9 +342,9 @@ swd() {
 	     esac
 	fi
 
-	if [[ -f $_swd_userdir/.loc.$HOSTNAME ]]
+	if [[ -f $_swd_userdir/.loc$_LWD_DISTINCT ]]
 	then
-	     ed -s $_swd_userdir/.loc.$HOSTNAME <<END
+	     ed -s $_swd_userdir/.loc$_LWD_DISTINCT <<END
 1i
 _lwd_home=$_swd
 .
@@ -326,10 +353,11 @@ w
 q
 END
 	else
-	    cat >$_swd_userdir/.loc.$HOSTNAME <<END
+	    cat >$_swd_userdir/.loc$_LWD_DISTINCT <<END
 _lwd_home=$_swd
 END
 	fi
 	uwd $_lwd_user
 }
 
+fi
