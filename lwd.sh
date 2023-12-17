@@ -160,7 +160,7 @@ lwd() {
 	     then echo Warning: \'$_uwhere\' not found in $_lwd_home.
 	     fi
 	     echo "function $1 { if [[ -n "\$_lwd_home" ]]; then cd \$_lwd_home/$_where; else echo No shortcut home set. Use \'swd\'.; fi; }" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
-	else echo "function $1 { cd $_where; }" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
+	else echo "function $1 { cd $_where/\$@; }" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
 	fi
 	echo _locs=\"$1 \$_locs\" >>$_lwd_userdir/.loc$_LWD_DISTINCT;
 	uwd $_lwd_user
